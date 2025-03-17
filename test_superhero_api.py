@@ -31,10 +31,6 @@ class Hero:
 
     def is_employed(self, hero):
         try:
-            logger.info(
-                'Метод is_unemloyed проверяет, работает ли герой: ',
-                hero=hero.get('name')
-            )
             work = hero.get('work', {})
             if not self._is_employee:
                 if work['occupation'] == '-':
@@ -97,6 +93,5 @@ class Hero:
             logger.error('Неизвестная ошибка: %s', e)
             raise e
 
-
-hero_1 = Hero('Male', False)
-print(hero_1.get_my_hero())
+# hero_1 = Hero('Male', False)
+# print(hero_1.get_my_hero())
