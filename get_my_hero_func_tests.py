@@ -152,7 +152,7 @@ class TestHero(unittest.TestCase):
 
     @patch('test_superhero_api.Hero.get_heroes')
     def test_get_my_hero_unnormal_gender_register(self, mock_get_heroes):
-        """Тест на проверку случая, когда height - None."""
+        """Тест на проверку случая, когда gender задан некорректным регистром."""
         mock_heroes_data = [
             {
                 "name": "Test hero 1",
