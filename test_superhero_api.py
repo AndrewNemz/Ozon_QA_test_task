@@ -24,7 +24,12 @@ class Hero:
             response.raise_for_status()
             data = response.json()
             return data
-        # TODO можно написат эксепшн HTTPError
+        except requests.exceptions.HTTPError as e:
+                logger.error('HTTPError: %s, Status Code: %s', e, e.response.status_code)
+                return None
+        except requests.exceptions.RequestException as e:
+            logger.error('RequestException: %s', e)
+            return None
         except Exception as e:
             logger.error('Неизвестная ошибка: %s', e)
             raise e
@@ -35,23 +40,23 @@ class Hero:
             if not self._is_employee:
                 if work['occupation'] == '-':
                     return True
-                else:
-                    return False
+                return False
             else:
                 if work['occupation'] != '-':
                     return True
-                else:
-                    return False
+                return False
         except Exception as e:
             logger.error('Неизвестная ошибка: %s', e)
             raise e
 
     def get_height(self, hero):
         try:
-            height = hero.get('appearance').get('height')[1]
-            if height is None:
-                return None
-            return float(height.split()[0])
+            if hero.get('appearance').get('height'):
+                height = hero.get('appearance').get('height')[1]
+                if height is None:
+                    return 0
+                return float(height.split()[0])
+            return 0
         except Exception as e:
             logger.error('Неизвестная ошибка: %s', e)
             raise e
@@ -67,7 +72,7 @@ class Hero:
 
             for hero in selected_heroes:
                 height = self.get_height(hero)
-                if height >= max_height:
+                if height > max_height:
                     max_height = height
                     talles_hero = hero
 
@@ -78,20 +83,21 @@ class Hero:
 
     def get_my_hero(self) -> dict:
         try:
+            if self._gender is not None:
+                gender = self._gender.lower().capitalize()
+            else:
+                gender = None
             logger.info(
                 'Метод get_my_hero: ',
-                gender=self._gender, is_work=self._is_employee
+                gender=gender, is_work=self._is_employee
             )
             heroes_data = self.get_heroes()
             selected_heroes = [
                 hero for hero in heroes_data if hero.get(
                     'appearance'
-                ).get('gender') == self._gender and self.is_employed(hero)
+                ).get('gender') == gender and self.is_employed(hero)
             ]
             return self.get_tallest_hero(selected_heroes)
         except Exception as e:
             logger.error('Неизвестная ошибка: %s', e)
             raise e
-
-# hero_1 = Hero('Male', False)
-# print(hero_1.get_my_hero())
